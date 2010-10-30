@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="sphinx4-forced-alignment">
+    <property name="sphinx4" value="/home/sam/Downloads/sphinx4/sphinx4-1.0beta5"/>
+
+    <property name="main.class" value="ForcedAlignment"/>
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="out.dir" value="${basedir}/bin"/>
+    <property name="jar.dir" value="${out.dir}/jars"/>
+
+    <property name="jar.name" value="${main.class}.jar"/>
+
+    <fileset id="sphinx4.jars" dir="${sphinx4}/lib" includes="
+        **/jsapi.jar
+        ,**/js.jar
+        ,**/tags.jar
+        ,**/sphinx4.jar
+        ,**/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar
+        "/>
+
+    <path id="libs">
+        <fileset refid="sphinx4.jars" />
+    </path>
+
+
+    <target name="build" >
+        <mkdir dir="${out.dir}"/>
+        <javac debug="true" destdir="${out.dir}" includeAntRuntime="false">
+            <src path="${src.dir}"/>
+            <classpath refid="libs"/>
+        </javac>
+        <mkdir dir="${jar.dir}"/>
+        <copy todir="${jar.dir}">
+            <fileset refid="sphinx4.jars" />
+        </copy>
+        <!--
+        <manifestclasspath property="jar.classpath"
+            jarfile="${basedir}/${jar.name}">
+            <classpath refid="libs"/>
+        </manifestclasspath>
+        -->
+
+        <jar destfile="${basedir}/${jar.name}">
+            <fileset dir="${out.dir}" includes="**/*.class" />
+            <zipgroupfileset dir="${jar.dir}" includes="**/*.jar" />
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <!--
+                <attribute name="Class-Path" value="${jar.classpath}"/>
+                -->
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${out.dir}"/>
+        <delete file="${basedir}/${jar.name}"/>
+    </target>
+</project>
